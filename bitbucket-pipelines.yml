@@ -1,0 +1,24 @@
+# Deploy to Chromatic on every pull request
+
+image: node:16
+
+pipelines:
+  branches:
+    develop:
+      - step:
+          name: 'Deploy to Chromatic'
+          caches:
+            - node
+          script:
+            - yarn install
+            - npx chromatic --project-token=$CHROMATIC_TOKEN ---force-rebuild --exit-zero-on-changes
+  pull-requests:
+    '**':
+      - step:
+          name: 'Tests & Deploy to Chromatic'
+          caches:
+            - node
+          script:
+            - yarn install
+            - yarn run lint & yarn run test
+            - npx chromatic --project-token=$CHROMATIC_TOKEN ---force-rebuild --exit-zero-on-changes
